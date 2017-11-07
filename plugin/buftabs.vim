@@ -163,6 +163,9 @@ endif
 "
 
 function! Buftabs_enable()
+  if exists("g:buftabs_disabled") && g:buftabs_disabled == 1
+    return
+  endif
 	let w:buftabs_enabled = 1
 endfunction
 
@@ -197,7 +200,7 @@ function! Buftabs_show(deleted_buf)
 		let w:from = 0
 	endif
 
-	if ! exists("w:buftabs_enabled")
+	if ! exists("w:buftabs_enabled") || w:buftabs_enabled != 1
 		return
 	endif
 
@@ -227,7 +230,8 @@ function! Buftabs_show(deleted_buf)
 
 		" Only show buffers in the list, and omit help screens
 	
-		if buflisted(l:i) && getbufvar(l:i, "&modifiable") && a:deleted_buf != l:i
+		"if buflisted(l:i) && getbufvar(l:i, "&modifiable") && a:deleted_buf != l:i
+		if buflisted(l:i) && a:deleted_buf != l:i
 
 			" Get the name of the current buffer, and escape characters that might
 			" mess up the statusline
@@ -248,10 +252,10 @@ function! Buftabs_show(deleted_buf)
 				let l:start = strlen(s:list)
 				let s:list = s:list . "\x01"
 			else
-				let s:list = s:list . ' '
+				let s:list = s:list . ''
 			endif
 				
-			let s:list = s:list . l:i . l:buftabs_separator
+			"let s:list = s:list . l:i . l:buftabs_separator
 			let s:list = s:list . l:name
 
 			if getbufvar(l:i, "&modified") == 1
@@ -259,7 +263,7 @@ function! Buftabs_show(deleted_buf)
 			endif
 			
 			if winbufnr(winnr()) == l:i
-				let s:list = s:list . "\x02"
+				let s:list = s:list . "\x02 "
 				let l:end = strlen(s:list)
 			else
 				let s:list = s:list . ' '
